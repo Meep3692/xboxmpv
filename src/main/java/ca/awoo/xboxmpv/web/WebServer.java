@@ -25,5 +25,6 @@ public class WebServer {
                 exchange.close();
             }
         };
+        server.createContext("/", httpHandler);
     }
 }
