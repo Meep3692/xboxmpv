@@ -1,7 +1,9 @@
 package ca.awoo.xboxmpv;
 
+import java.io.IOException;
+
 public class App {
-    public static void main(String[] args) throws InterruptedException, MpvException{
+    public static void main(String[] args) throws InterruptedException, MpvException, IOException{
 
         Player player = new Player(
             new MpvOption("idle", "yes"),
@@ -10,16 +12,7 @@ public class App {
         player.enqueue("https://www.youtube.com/watch?v=wTuhDxQk5fI");
         
         System.out.println("Should be running?");
-        while(true){
-            MpvEvent event = player.waitEvent(10);
-            System.out.println(event);
-            if(event.equals(MpvEvent.MPV_EVENT_SHUTDOWN)){
-                break;
-            }
-            if(event.equals(MpvEvent.MPV_EVENT_END_FILE)){
-                Thread.sleep(1000);
-                player.enqueue("https://www.youtube.com/watch?v=VSrYhbYIwR4");
-            }
-        }
+        HttpFrontend frontend = new HttpFrontend(player);
+        frontend.start();
     }
 }
