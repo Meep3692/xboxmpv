@@ -5,6 +5,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
 
+import ca.awoo.jabert.SValue;
+
 public interface WebContext {
     public InputStream getRequestBody();
     public OutputStream getResponseBody();
@@ -17,4 +19,5 @@ public interface WebContext {
     public void addResponseHeader(String name, String value);
     public String getMethod();
     public void assertMethod(String method) throws WebException;
+    public SValue readRequestBody() throws WebException;
 }

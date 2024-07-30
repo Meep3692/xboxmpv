@@ -2,12 +2,22 @@ package ca.awoo.xboxmpv.web;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.sun.net.httpserver.*;
+
+import ca.awoo.jabert.FastJsonFormat;
+import ca.awoo.jabert.Format;
+import ca.awoo.jabert.Serializer;
+import ca.awoo.jabert.Serializers;
 
 public class WebServer {
     private final HttpServer server;
     private final HttpHandler httpHandler;
+
+    private final Serializer serializer;
+    private final Map<String, Format> formats;
 
     private WebHandler handler;
 
@@ -15,7 +25,7 @@ public class WebServer {
         server = HttpServer.create();
         server.bind(new InetSocketAddress(8080), 0);
         httpHandler = exchange -> {
-            WebContext context = new HttpWebContext(exchange);
+            WebContext context = new HttpWebContext(exchange, WebServer.this);
             try {
                 handler.handle(context);
             } catch (WebException e) {
@@ -40,6 +50,13 @@ public class WebServer {
             }
         };
         server.createContext("/", httpHandler);
+        serializer = Serializers.defaultSerializer();
+        formats = new HashMap<>();
+        formats.put("application/json", new FastJsonFormat("UTF-8"));
+    }
+
+    public Format getFormat(String mime){
+        return formats.get(mime);
     }
 
     private void exceptionToHtml(StringBuilder html, Exception e){

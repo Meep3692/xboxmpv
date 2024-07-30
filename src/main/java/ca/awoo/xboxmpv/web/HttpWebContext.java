@@ -7,13 +7,20 @@ import java.util.List;
 
 import com.sun.net.httpserver.HttpExchange;
 
+import ca.awoo.jabert.Format;
+import ca.awoo.jabert.FormatException;
+import ca.awoo.jabert.SValue;
+import ca.awoo.xboxmpv.web.exceptions.BadRequestException;
 import ca.awoo.xboxmpv.web.exceptions.MethodNotAllowedException;
+import ca.awoo.xboxmpv.web.exceptions.UnsupportedMediaTypeException;
 
 public class HttpWebContext implements WebContext{
     private final HttpExchange exchange;
+    private final WebServer server;
 
-    public HttpWebContext(HttpExchange exchange){
+    public HttpWebContext(HttpExchange exchange, WebServer server){
         this.exchange = exchange;
+        this.server = server;
     }
 
     @Override
@@ -71,5 +78,22 @@ public class HttpWebContext implements WebContext{
     @Override
     public void addResponseHeader(String name, String value) {
         exchange.getResponseHeaders().add(name, value);
+    }
+
+    @Override
+    public SValue readRequestBody() throws WebException{
+        List<String> contentTypes = exchange.getRequestHeaders().get("Content-Type");
+        //TODO: not correct
+        String mime = contentTypes.get(0).split(";")[0];
+        Format format = server.getFormat(mime);
+        if(format == null) {
+            throw new UnsupportedMediaTypeException("Unknown mime type " + mime + " in Content-Type " + contentTypes.get(0));
+        }
+        try {
+            SValue value = format.parse(getRequestBody());
+            return value;
+        } catch (FormatException e) {
+            throw new BadRequestException(e);
+        }
     }
 }
