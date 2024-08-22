@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
+import java.util.Optional;
 
 import com.sun.net.httpserver.HttpExchange;
 
@@ -82,18 +83,21 @@ public class HttpWebContext implements WebContext{
 
     @Override
     public SValue readRequestBody() throws WebException{
-        List<String> contentTypes = exchange.getRequestHeaders().get("Content-Type");
-        //TODO: not correct
-        String mime = contentTypes.get(0).split(";")[0];
-        Format format = server.getFormat(mime);
-        if(format == null) {
-            throw new UnsupportedMediaTypeException("Unknown mime type " + mime + " in Content-Type " + contentTypes.get(0));
+        List<String> contentType = getRequestHeader("Content-Type");
+        if(contentType.size() > 1){
+            throw new BadRequestException("Multiple Content-Type headers in request");
         }
-        try {
-            SValue value = format.parse(getRequestBody());
-            return value;
-        } catch (FormatException e) {
-            throw new BadRequestException(e);
+        if(contentType.isEmpty()){
+            throw new BadRequestException("Missing header Content-Type");
+        }else{
+            ContentType requestContentType = ContentType.parseHeader(contentType.get(0));
+            Format format = server.getFormat(requestContentType).orElseThrow(() -> new UnsupportedMediaTypeException("Unsupported media type " + requestContentType));
+            try {
+                SValue value = format.parse(getRequestBody());
+                return value;
+            } catch (FormatException e) {
+                throw new BadRequestException(e);
+            }
         }
     }
 }
