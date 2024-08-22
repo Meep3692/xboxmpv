@@ -7,7 +7,6 @@ import java.util.Optional;
 import com.sun.net.httpserver.*;
 
 import ca.awoo.jabert.Format;
-import ca.awoo.jabert.Serializer;
 import ca.awoo.jabert.Serializers;
 
 /**
@@ -17,7 +16,6 @@ public class WebServer {
     private final HttpServer server;
     private final HttpHandler httpHandler;
 
-    private final Serializer serializer;
     private final MultipleFormatProvider formatProvider = new MultipleFormatProvider();
 
     private WebHandler handler;
@@ -51,7 +49,7 @@ public class WebServer {
             }
         };
         server.createContext("/", httpHandler);
-        serializer = Serializers.defaultSerializer();
+        Serializers.defaultSerializer();
         formatProvider.addFormat(new JsonFormatProvider());
     }
 
