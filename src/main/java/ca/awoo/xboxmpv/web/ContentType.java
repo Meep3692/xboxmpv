@@ -58,19 +58,21 @@ public class ContentType {
      */
     public static ContentType parseHeader(String header) throws UnsupportedMediaTypeException{
         String[] mimesplit = header.split(";");
-        if(mimesplit.length != 2){
+        if(mimesplit.length > 2){
             throw new UnsupportedMediaTypeException("More than one semicolon in Content-Type header");
         }
         String mimetype = mimesplit[0].trim();
         ContentType contentType = new ContentType(mimetype);
-        String[] params = mimesplit[1].split(" ");
-        for(String param : params){
-            if(param.length() > 0){
-                String[] paramSplit = param.split("=");
-                if(paramSplit.length != 2){
-                    throw new UnsupportedMediaTypeException("Param somehow has more than one equals in Content-Type header");
+        if(mimesplit.length > 1){
+            String[] params = mimesplit[1].split(" ");
+            for(String param : params){
+                if(param.length() > 0){
+                    String[] paramSplit = param.split("=");
+                    if(paramSplit.length != 2){
+                        throw new UnsupportedMediaTypeException("Param somehow has more than one equals in Content-Type header");
+                    }
+                    contentType.addArgument(paramSplit[0], paramSplit[1]);
                 }
-                contentType.addArgument(paramSplit[0], paramSplit[1]);
             }
         }
         return contentType;

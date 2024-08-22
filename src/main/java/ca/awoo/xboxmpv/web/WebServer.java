@@ -55,6 +55,10 @@ public class WebServer {
         formatProvider.addFormat(new JsonFormatProvider());
     }
 
+    public void setHandler(WebHandler handler){
+        this.handler = handler;
+    }
+
     public void start(){
         server.start();
     }

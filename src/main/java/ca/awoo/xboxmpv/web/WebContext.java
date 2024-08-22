@@ -117,11 +117,17 @@ public interface WebContext {
     public void setModel(SValue value);
 
     /**
-     * Ge the set response model
+     * Get the set response model
      * <p>
      * This is the method that MVC middleware will use to get model info
      * </p>
      * @return The set response model
      */
     public SValue getModel();
+
+    /**
+     * Get the server that is serving this request.
+     * @return The server
+     */
+    public WebServer getServer();
 }

@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
-import java.util.Optional;
-
 import com.sun.net.httpserver.HttpExchange;
 
 import ca.awoo.jabert.Format;
@@ -120,5 +118,10 @@ public class HttpWebContext implements WebContext{
     @Override
     public SValue getModel() {
         return model;
+    }
+
+    @Override
+    public WebServer getServer() {
+        return server;
     }
 }
