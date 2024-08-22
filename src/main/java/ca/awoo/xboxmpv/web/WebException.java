@@ -1,5 +1,8 @@
 package ca.awoo.xboxmpv.web;
 
+/**
+ * An exception that represents an HTTP error, complete with error code.
+ */
 public class WebException extends Exception {
     public final int responseCode;
 

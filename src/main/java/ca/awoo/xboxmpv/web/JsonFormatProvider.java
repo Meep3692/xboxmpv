@@ -8,6 +8,9 @@ import ca.awoo.jabert.FastJsonFormat;
 import ca.awoo.jabert.Format;
 import ca.awoo.xboxmpv.web.exceptions.UnsupportedMediaTypeException;
 
+/**
+ * FormatProvider that provides a FastJsonFormat if applicable
+ */
 public class JsonFormatProvider implements FormatProvider{
 
     @Override

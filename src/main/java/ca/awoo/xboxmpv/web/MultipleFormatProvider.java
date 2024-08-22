@@ -6,6 +6,9 @@ import java.util.Set;
 
 import ca.awoo.jabert.Format;
 
+/**
+ * Combines multiple FormatProviders, return the first Format it finds or None.
+ */
 public class MultipleFormatProvider implements FormatProvider {
     private final Set<FormatProvider> providers = new HashSet<>();
 

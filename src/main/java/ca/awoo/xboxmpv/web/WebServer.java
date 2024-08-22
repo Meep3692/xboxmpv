@@ -2,19 +2,17 @@ package ca.awoo.xboxmpv.web;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import com.sun.net.httpserver.*;
 
-import ca.awoo.jabert.FastJsonFormat;
 import ca.awoo.jabert.Format;
 import ca.awoo.jabert.Serializer;
 import ca.awoo.jabert.Serializers;
-import ca.awoo.xboxmpv.web.exceptions.BadRequestException;
 
+/**
+ * Handles requests from clients over HTTP using a WebHandler.
+ */
 public class WebServer {
     private final HttpServer server;
     private final HttpHandler httpHandler;
@@ -30,15 +28,6 @@ public class WebServer {
         httpHandler = exchange -> {
             WebContext context = new HttpWebContext(exchange, WebServer.this);
             try {
-                List<String> contentType = context.getRequestHeader("Content-Type");
-                if(contentType.size() > 1){
-                    throw new BadRequestException("Multiple Content-Type headers in request");
-                }
-                if(contentType.isEmpty()){
-                    //TODO
-                }else{
-                    ContentType requestContentType = ContentType.parseHeader(contentType.get(0));
-                }
                 handler.handle(context);
             } catch (WebException e) {
                 StringBuilder html = new StringBuilder();

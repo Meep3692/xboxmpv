@@ -11,14 +11,23 @@ import com.sun.net.httpserver.HttpExchange;
 import ca.awoo.jabert.Format;
 import ca.awoo.jabert.FormatException;
 import ca.awoo.jabert.SValue;
+import ca.awoo.jabert.SValue.SNull;
 import ca.awoo.xboxmpv.web.exceptions.BadRequestException;
 import ca.awoo.xboxmpv.web.exceptions.MethodNotAllowedException;
 import ca.awoo.xboxmpv.web.exceptions.UnsupportedMediaTypeException;
 
+/**
+ * WebContext based on a {@link com.sun.net.httpserver.HttpsExchange}
+ */
 public class HttpWebContext implements WebContext{
     private final HttpExchange exchange;
     private final WebServer server;
 
+    /**
+     * Create a new HttpWebContext based on a HttpExchange by the given server
+     * @param exchange the HttpExchange for the request
+     * @param server the WebServer handling the request
+     */
     public HttpWebContext(HttpExchange exchange, WebServer server){
         this.exchange = exchange;
         this.server = server;
@@ -99,5 +108,17 @@ public class HttpWebContext implements WebContext{
                 throw new BadRequestException(e);
             }
         }
+    }
+
+    private SValue model = new SNull();
+
+    @Override
+    public void setModel(SValue value) {
+        this.model = value;
+    }
+
+    @Override
+    public SValue getModel() {
+        return model;
     }
 }

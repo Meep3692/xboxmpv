@@ -8,19 +8,38 @@ import com.sun.jna.Pointer;
 import com.sun.jna.Structure;
 import com.sun.jna.win32.StdCallLibrary;
 
+/**
+ * Interface to native mpv library
+ */
 public interface MPV extends StdCallLibrary {
+    /**
+     * Instance of mpv native library
+     */
     MPV INSTANCE = Native.load("lib/libmpv-2.dll", MPV.class);
     
     /*
     * Event ID's
     */
+    /**
+     * End of file event id
+     */
     int MPV_EVENT_END_FILE = 7;
+    /**
+     * File loaded event id
+     */
     int MPV_EVENT_FILE_LOADED = 8;
+    /**
+     * Idle event id
+     */
     int MPV_EVENT_IDLE = 11;
+    /**
+     * Tick event id
+     */
     int MPV_EVENT_TICK = 14;
     
     /**
      * Return the MPV_CLIENT_API_VERSION the mpv source has been compiled with.
+     * @return the MPV_CLIENT_API_VERSION
      */
     long mpv_client_api_version();
     /**
@@ -97,6 +116,7 @@ public interface MPV extends StdCallLibrary {
      *        - input-app-events (macOS)
      *      - all encoding mode options
      *
+     * @param handle the mpv client API handle returned from mpv_create()
      * @return error code
      */
     int mpv_initialize(long handle);
@@ -111,7 +131,8 @@ public interface MPV extends StdCallLibrary {
      * Does not use OSD and string expansion by default (unlike mpv_command_string()
      * and input.conf).
      *
-     * @param[in] args NULL-terminated list of strings. Usually, the first item
+     * @param handle the mpv client API handle returned from mpv_create()
+     * @param args List of strings. Usually, the first item
      *                 is the command, and the following items are arguments.
      * @return error code
      */
@@ -123,6 +144,9 @@ public interface MPV extends StdCallLibrary {
      * need quoting/escaping.
      *
      * This also has OSD and string expansion enabled by default.
+     * @param handle the mpv client API handle returned from mpv_create()
+     * @param args List of strings. Usually, the first item is the command, and the following items are arguments.
+     * @return error code
      */
     int mpv_command_string(long handle, String args);
 
@@ -135,6 +159,7 @@ public interface MPV extends StdCallLibrary {
      * On error, NULL is returned. Use mpv_get_property() if you want fine-grained
      * error reporting.
      *
+     * @param handle the mpv client API handle returned from mpv_create()
      * @param name The property name.
      * @return Property value, or NULL if the property can't be retrieved. Free
      *         the string with mpv_free().
@@ -145,6 +170,10 @@ public interface MPV extends StdCallLibrary {
      * Convenience function to set a property to a string value.
      *
      * This is like calling mpv_set_property() with MPV_FORMAT_STRING.
+     * @param handle the mpv client API handle returned from mpv_create()
+     * @param name The property name.
+     * @param data New property string value.
+     * @return error code
      */
     int mpv_set_property_string(long handle, String name, String data);
 
@@ -152,9 +181,17 @@ public interface MPV extends StdCallLibrary {
      * Convenience function to set an option to a string value. This is like
      * calling mpv_set_option() with MPV_FORMAT_STRING.
      *
+     * @param handle the mpv client API handle returned from mpv_create()
+     * @param name The property name.
+     * @param data New property string value.
      * @return error code
      */
     int mpv_set_option_string(long handle, String name, String data);
+
+    /**
+     * Free data allocated by mpv
+     * @param data Pointer allocated by mpv
+     */
     void mpv_free(Pointer data);
 
     /**
@@ -175,10 +212,11 @@ public interface MPV extends StdCallLibrary {
      *       these are resolved, the option setting functions might be fully
      *       deprecated.
      *
+     * @param handle the mpv client API handle returned from mpv_create()
      * @param name Option name. This is the same as on the mpv command line, but
      *             without the leading "--".
      * @param format see enum mpv_format.
-     * @param[in] data Option value (according to the format).
+     * @param data Option value (according to the format).
      * @return error code
      */
     int mpv_set_option(long handle, String name, int format, Pointer data);
@@ -203,7 +241,8 @@ public interface MPV extends StdCallLibrary {
      * As long as the timeout is 0, this is safe to be called from mpv render API
      * threads.
      *
-     * @param timeout Timeout in seconds, after which the function returns even if
+     * @param handle the mpv client API handle returned from mpv_create()
+     * @param timeOut Timeout in seconds, after which the function returns even if
      *                no event was received. A MPV_EVENT_NONE is returned on
      *                timeout. A value of 0 will disable waiting. Negative values
      *                will wait with an infinite timeout.
@@ -226,12 +265,16 @@ public interface MPV extends StdCallLibrary {
      *
      * Safe to be called from mpv render API threads.
      *
-     * @param event See enum mpv_event_id.
+     * @param handle the mpv client API handle returned from mpv_create()
+     * @param event_id See enum mpv_event_id.
      * @param enable 1 to enable receiving this event, 0 to disable it.
      * @return error code
      */
     int mpv_request_event(long handle, int event_id, int enable);
     
+    /**
+     * Event structure returned by mpv_wait_event
+     */
     class mpv_event extends Structure {
         public int event_id;
         public int error;
